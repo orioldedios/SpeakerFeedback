@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REGISTER_USER = 0;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView textview;
+    private TextView userCountView;
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration userRegistration;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         textview = findViewById(R.id.textView);
+        userCountView = findViewById(R.id.usersCountView);
         getOrRegisterUser();
 
         if(userId != null) {
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 nomUsuaris += doc.getString("name") + "\n";
             }
+            userCountView.setText("Users connected: " + Integer.toString(documentSnapshots.size()));
             textview.setText(nomUsuaris);
         }
     };
