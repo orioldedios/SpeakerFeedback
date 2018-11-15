@@ -26,6 +26,7 @@
         android:id="@+id/statusBar"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:onClick="onStatusBarClick"
         android:background="@android:color/holo_green_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

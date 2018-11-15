@@ -166,4 +166,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onStatusBarClick(View view)
+    {
+        
+    }
 }
