@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -38,6 +39,20 @@ public class MainActivity extends AppCompatActivity {
 
         textview = findViewById(R.id.textView);
         getOrRegisterUser();
+
+        if(userId != null) {
+            enterRoom();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        db.collection("users").document(userId).update("room", FieldValue.delete());
+        super.onDestroy();
+    }
+
+    private void enterRoom() {
+        db.collection("users").document(userId).update("room","testroom");
     }
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
@@ -134,6 +149,8 @@ public class MainActivity extends AppCompatActivity {
                         .putString("userId", userId)
                         .commit();
                 Log.i("SpeakerFeedback", "New user: userId = " + userId);
+                enterRoom();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
