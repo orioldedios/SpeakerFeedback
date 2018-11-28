@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
         userCountView = findViewById(R.id.usersCountView);
         getOrRegisterUser();
 
-        if(userId != null) {
+        if(userId != null)
+        {
             enterRoom();
         }
     }
@@ -169,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void onStatusBarClick(View view)
     {
-        
+        Intent intent = new Intent(this, UsersListActivity.class);
+        intent.putExtra("roomId", "testroom");
+        startActivity(intent);
     }
 }
