@@ -37,8 +37,15 @@ public class UsersListActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        {
             return null;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+        {
+
         }
     }
 }
