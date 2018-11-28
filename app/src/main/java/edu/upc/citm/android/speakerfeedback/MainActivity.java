@@ -2,11 +2,17 @@ package edu.upc.citm.android.speakerfeedback;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,26 +27,35 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REGISTER_USER = 0;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private TextView textview;
     private TextView userCountView;
+    private RecyclerView polls_view;
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration userRegistration;
+    private List<Poll> polls = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        textview = findViewById(R.id.textView);
         userCountView = findViewById(R.id.usersCountView);
+        polls_view = findViewById(R.id.polls_view);
+        polls_view.setLayoutManager(new LinearLayoutManager(this));
+        polls_view.setAdapter(new Adapter());
+
+        polls = new ArrayList<Poll>();
+        polls.add(new Poll("lalala?"));
+
         getOrRegisterUser();
 
         if(userId != null)
@@ -48,6 +63,132 @@ public class MainActivity extends AppCompatActivity {
             enterRoom();
         }
     }
+
+
+    private static final int MAX_OPTIONS = 10;
+    private static final int option_view_ids[] = { R.id.option1View, R.id.option2View, R.id.option3View, R.id.option4View, R.id.option5View };
+    private static final int bar_view_ids[]    = { R.id.bar1View, R.id.bar2View, R.id.bar3View, R.id.bar4View, R.id.bar5View };
+    private static final int count_view_ids[]  = { R.id.awnser1View, R.id.awnser2View, R.id.awnser3View, R.id.awnser4View, R.id.awnser5View };
+
+
+    class ViewHolder extends RecyclerView.ViewHolder {
+
+        private CardView card_view;
+        private TextView label_view;
+        private TextView question_view;
+        private TextView[] option_views;
+        private View[] bar_views;
+        private TextView[] count_views;
+
+        ViewHolder(View itemView) {
+            super(itemView);
+            card_view     = itemView.findViewById(R.id.cardView);
+            label_view    = itemView.findViewById(R.id.labelView);
+            question_view = itemView.findViewById(R.id.questionView);
+
+            option_views = new TextView[MAX_OPTIONS];
+            for (int i = 0; i < option_view_ids.length; i++) {
+                option_views[i] = itemView.findViewById(option_view_ids[i]);
+            }
+            bar_views = new View[MAX_OPTIONS];
+            for (int i = 0; i < bar_view_ids.length; i++) {
+                bar_views[i] = itemView.findViewById(bar_view_ids[i]);
+            }
+            count_views = new TextView[MAX_OPTIONS];
+            for (int i = 0; i < count_view_ids.length; i++) {
+                count_views[i] = itemView.findViewById(count_view_ids[i]);
+            }
+        }
+
+        void setOptionVisibility(int i, int visibility) {
+            option_views[i].setVisibility(visibility);
+            bar_views[i].setVisibility(visibility);
+            count_views[i].setVisibility(visibility);
+        }
+    }
+
+    class Adapter extends RecyclerView.Adapter<ViewHolder> {
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View itemView = getLayoutInflater().inflate(R.layout.poll, parent, false);
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            Poll poll = polls.get(position);
+            if (position == 0) {
+                holder.label_view.setVisibility(View.VISIBLE);
+                if (poll.isOpen()) {
+                    holder.label_view.setText("Active");
+                } else {
+                    holder.label_view.setText("Previous");
+                }
+            } else {
+                if (!poll.isOpen() && polls.get(position-1).isOpen()) {
+                    holder.label_view.setVisibility(View.VISIBLE);
+                    holder.label_view.setText("Previous");
+                } else {
+                    holder.label_view.setVisibility(View.GONE);
+                }
+            }
+            float elevation = poll.isOpen() ? 10.0f : 0.0f;
+            int bg_color = getResources().getColor(poll.isOpen() ? android.R.color.white : R.color.cardview_dark_background);
+            holder.card_view.setCardElevation(elevation);
+            holder.card_view.setCardBackgroundColor(bg_color);
+
+            int activeColor = Color.rgb(0, 0, 0);
+            int passiveColor = Color.rgb(100, 100, 100);
+
+            holder.question_view.setText(poll.getQuestion());
+            holder.question_view.setTextColor(poll.isOpen() ? activeColor : passiveColor);
+
+            List<String> options = poll.getOptions();
+            for (int i = 0; i < option_view_ids.length; i++) {
+                if (i < options.size()) {
+                    holder.option_views[i].setText(options.get(i));
+                    holder.option_views[i].setTextColor(poll.isOpen() ? activeColor : passiveColor);
+                    holder.setOptionVisibility(i, View.VISIBLE);
+                } else {
+                    holder.setOptionVisibility(i, View.GONE);
+                }
+                holder.bar_views[i].setAlpha(poll.isOpen() ? 1.0f : 0.25f);
+            }
+            List<Integer> results = poll.getResults();
+            for (int i = 0; i < options.size(); i++) {
+                Integer res = null;
+                if (results != null && i < results.size()) {
+                    res = results.get(i);
+                }
+                ViewGroup.LayoutParams params = holder.bar_views[i].getLayoutParams();
+                params.width = 4;
+                int visibility = View.GONE;
+                if (res != null) {
+                    visibility = View.VISIBLE;
+                    params.width += 16 * (int) res;
+                    holder.count_views[i].setText(String.format("%d", results.get(i)));
+                }
+                holder.bar_views[i].setVisibility(visibility);
+                holder.count_views[i].setVisibility(visibility);
+                holder.bar_views[i].setLayoutParams(params);
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return polls.size();
+        }
+    }
+
+
+
+
+
+
+
+
 
     @Override
     protected void onDestroy() {
@@ -85,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
                 nomUsuaris += doc.getString("name") + "\n";
             }
             userCountView.setText("Users connected: " + Integer.toString(documentSnapshots.size()));
-            textview.setText(nomUsuaris);
         }
     };
 
