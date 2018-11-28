@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="364dp"
+        android:layout_height="183dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/labelView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ACTIVE" />
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/questionView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="Question"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/option1View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="11dp"
+                    android:text="A"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/questionView" />
+
+                <TextView
+                    android:id="@+id/option2View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="B"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/option1View" />
+
+                <TextView
+                    android:id="@+id/option3View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="C"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/option2View" />
+
+                <TextView
+                    android:id="@+id/option4View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="D"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/option3View" />
+
+                <TextView
+                    android:id="@+id/option5View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="E"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/option4View" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="1dp"
+                    android:layout_height="149dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintStart_toEndOf="@+id/option1View"
+                    app:layout_constraintTop_toBottomOf="@+id/questionView" />
+
+                <view
+                    android:id="@+id/view6"
+                    class="android.support.design.widget.AppBarLayout"
+                    id="@+id/view"
+                    android:layout_width="4"
+                    android:layout_height="16"
+                    tools:layout_editor_absoluteX="36dp"
+                    tools:layout_editor_absoluteY="41dp" />
+
+                <view
+                    android:id="@+id/view7"
+                    class="android.support.design.widget.AppBarLayout"
+                    id="@+id/view2"
+                    android:layout_width="4"
+                    android:layout_height="16"
+                    android:background="?android:attr/colorPressedHighlight"
+                    tools:layout_editor_absoluteX="36dp"
+                    tools:layout_editor_absoluteY="65dp" />
+
+                <view
+                    android:id="@+id/view8"
+                    class="android.support.design.widget.AppBarLayout"
+                    id="@+id/view3"
+                    android:layout_width="4"
+                    android:layout_height="16"
+                    android:background="@color/colorAccent"
+                    tools:layout_editor_absoluteX="36dp"
+                    tools:layout_editor_absoluteY="89dp" />
+
+                <view
+                    android:id="@+id/view9"
+                    class="android.support.design.widget.AppBarLayout"
+                    id="@+id/view4"
+                    android:layout_width="4"
+                    android:layout_height="16"
+                    android:background="?android:attr/colorPressedHighlight"
+                    tools:layout_editor_absoluteX="36dp"
+                    tools:layout_editor_absoluteY="115dp" />
+
+                <view
+                    android:id="@+id/view10"
+                    class="android.support.design.widget.AppBarLayout"
+                    id="@+id/view5"
+                    android:layout_width="4"
+                    android:layout_height="16"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="@android:color/background_dark"
+                    app:layout_constraintBottom_toBottomOf="@+id/option5View"
+                    app:layout_constraintStart_toEndOf="@+id/divider"
+                    app:layout_constraintTop_toTopOf="@+id/option5View" />
+
+                <TextView
+                    android:id="@+id/awnser1View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/view6"
+                    app:layout_constraintStart_toEndOf="@+id/view6"
+                    app:layout_constraintTop_toTopOf="@+id/view6" />
+
+                <TextView
+                    android:id="@+id/awnser2View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/view7"
+                    app:layout_constraintStart_toEndOf="@+id/view7"
+                    app:layout_constraintTop_toTopOf="@+id/view7" />
+
+                <TextView
+                    android:id="@+id/awnser3View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/view8"
+                    app:layout_constraintStart_toEndOf="@+id/view8"
+                    app:layout_constraintTop_toTopOf="@+id/view8" />
+
+                <TextView
+                    android:id="@+id/awnser4View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="1dp"
+                    android:text="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/view9"
+                    app:layout_constraintStart_toEndOf="@+id/view9"
+                    app:layout_constraintTop_toTopOf="@+id/view9" />
+
+                <TextView
+                    android:id="@+id/awnser5View"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/view10"
+                    app:layout_constraintStart_toEndOf="@+id/view10"
+                    app:layout_constraintTop_toTopOf="@+id/view10" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
