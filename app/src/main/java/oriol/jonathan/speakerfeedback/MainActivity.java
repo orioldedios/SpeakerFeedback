@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     private ListenerRegistration userRegistration;
     private List<Poll> polls = new ArrayList<>();
 
+    private static final int MAX_OPTIONS = 10;
+    private static final int option_view_ids[] = { R.id.option1View, R.id.option2View, R.id.option3View, R.id.option4View, R.id.option5View };
+    private static final int bar_view_ids[]    = { R.id.bar1View, R.id.bar2View, R.id.bar3View, R.id.bar4View, R.id.bar5View };
+    private static final int count_view_ids[]  = { R.id.awnser1View, R.id.awnser2View, R.id.awnser3View, R.id.awnser4View, R.id.awnser5View };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +73,6 @@ public class MainActivity extends AppCompatActivity {
             enterRoom();
         }
     }
-
-    private static final int MAX_OPTIONS = 10;
-    private static final int option_view_ids[] = { R.id.option1View, R.id.option2View, R.id.option3View, R.id.option4View, R.id.option5View };
-    private static final int bar_view_ids[]    = { R.id.bar1View, R.id.bar2View, R.id.bar3View, R.id.bar4View, R.id.bar5View };
-    private static final int count_view_ids[]  = { R.id.awnser1View, R.id.awnser2View, R.id.awnser3View, R.id.awnser4View, R.id.awnser5View };
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -214,12 +213,6 @@ public class MainActivity extends AppCompatActivity {
             if (e != null) {
                 Log.e("SpeakerFeedback", "Error al rebre usuaris dins un room", e);
                 return;
-            }
-            //textview.setText(String.format("Numuser: %id",documentSnapshots.size()));
-            String nomUsuaris = "";
-            for (DocumentSnapshot doc: documentSnapshots)
-            {
-                nomUsuaris += doc.getString("name") + "\n";
             }
             userCountView.setText("Users connected: " + Integer.toString(documentSnapshots.size()));
         }
