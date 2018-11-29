@@ -172,6 +172,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    private void startFirestoreListenerService()
+    {
+        Intent intent = new Intent(this,FirestoneListenerService.class);
+        intent.putExtra("room","testroom");
+        startService(intent);
+    }
+
+    private void  stopFirestoreListenerService()
+    {
+        Intent intent = new Intent(this,FirestoneListenerService.class);
+        stopService(intent);
+    }
+
     //Listeners
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
@@ -299,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         polls.add(new Poll("Qué ise illo? xddd"));
 
         getOrRegisterUser();
-
+        startFirestoreListenerService();
         if(userId != null)
         {
             enterRoom();
