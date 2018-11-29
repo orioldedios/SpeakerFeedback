@@ -17,8 +17,6 @@ public class FirestoneListenerService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoneListenerService.onCreate");
-
-
     }
 
     @Override

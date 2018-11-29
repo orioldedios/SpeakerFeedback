@@ -1,9 +1,11 @@
 package oriol.jonathan.speakerfeedback;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -12,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private Adapter adapter;
     private String userId;
     private List<Poll> polls = new ArrayList<>();
+    private List<String> ids = new ArrayList<>();
 
     ListenerRegistration votesRegistration;
 
@@ -88,6 +92,15 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < count_view_ids.length; i++) {
                 count_views[i] = itemView.findViewById(count_view_ids[i]);
             }
+
+            card_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view)
+                {
+                    int index = getAdapterPosition();
+                    onPollClick(index);
+                }
+            });
         }
 
         void setOptionVisibility(int i, int visibility) {
@@ -124,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     holder.label_view.setVisibility(View.GONE);
                 }
             }
+
             float elevation = poll.isOpen() ? 10.0f : 0.0f;
             int bg_color = getResources().getColor(poll.isOpen() ? android.R.color.white : R.color.cardview_dark_background);
             holder.card_view.setCardElevation(elevation);
@@ -171,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
             return polls.size();
         }
     }
-
 
     private void startFirestoreListenerService()
     {
@@ -229,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                 if(poll != null)
                 {
                     polls.add(poll);
+                    ids.add(doc.getId());
                     pollsMap.put(doc.getId(), poll);
                     if (poll.isOpen()) {
                         activePoll = true;
@@ -330,20 +344,16 @@ public class MainActivity extends AppCompatActivity {
         db.collection("users").document(userId).update("room","testroom");
     }
 
-    private void removeVotesListener(){
-
-        if(true)
-            return;
-
+    private void removeVotesListener()
+    {
         if (votesRegistration != null) {
+
             votesRegistration.remove();
         }
     }
 
-    private void addVotesListener() {
-        if(true)
-            return;
-
+    private void addVotesListener()
+    {
         votesRegistration = roomRef.collection("votes")
                 .addSnapshotListener(this, votesListener);
     }
@@ -360,9 +370,6 @@ public class MainActivity extends AppCompatActivity {
                 .addSnapshotListener(this, userListener);
         roomRef.collection("polls").orderBy("start", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, pollsListener);
-
-        //Get a reference to the votes listener
-        votesRegistration = roomRef.collection("votes").addSnapshotListener(this, votesListener);
     }
 
     @Override
@@ -435,5 +442,72 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, UsersListActivity.class);
         intent.putExtra("roomId", "testroom");
         startActivity(intent);
+    }
+
+    public void onPollClick(final int index)
+    {
+        //If the poll is opened, open the question and the answers in order to vote.
+        Poll poll = polls.get(index);
+        if(poll.isOpen())
+        {
+            final List<String> options = poll.getOptions().subList(0, poll.getOptions().size());
+            options.add("Close Poll");
+
+            final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item);
+            for(String option : options)
+            {
+                arrayAdapter.add(option);
+            }
+
+            new AlertDialog.Builder(this)
+                    .setTitle(poll.getQuestion())
+                    .setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int option)
+                        {
+                            if (option == options.size()-1) {
+                                closePoll(index);
+                            }
+
+                            else
+                            {
+                                votePoll(index, option);
+                            }
+                        }
+                    })
+                    .create().show();
+        }
+    }
+
+    public void closePoll(int index)
+    {
+        String id = ids.get(index);
+        Poll poll = polls.get(index);
+
+        //Close the poll, to not let the user vote again
+        poll.setOpen(false);
+
+        //Assign the right poll to the document and Log results
+        db.collection("rooms").document("testroom").collection("polls").document(id).set(poll)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("SpeakerFeedback", "Poll saved");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("SpeakerFeedback", "Poll NOT saved", e);
+            }
+        });
+
+        //Delete the listener in order to don't react again to the clicks, already voted.
+        removeVotesListener();
+    }
+
+    public void votePoll(int index, int option)
+    {
+        Poll poll = polls.get(index);
+        poll.addVote(option);
     }
 }
