@@ -214,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if(poll != null)
                 {
-                    //ids.add(doc.getId());
                     polls.add(poll);
                     pollsMap.put(doc.getId(), poll);
                     if (poll.isOpen()) {
