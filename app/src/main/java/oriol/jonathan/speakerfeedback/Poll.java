@@ -12,6 +12,8 @@ public class Poll {
     private Date start, end;
     private List<Integer> results;
 
+    Poll(){}
+
     Poll(String question)
     {
             this.question = question;

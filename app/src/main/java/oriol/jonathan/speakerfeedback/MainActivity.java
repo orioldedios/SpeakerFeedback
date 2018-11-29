@@ -201,10 +201,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-            //TODO: FIX THIS LISTENER AND DELETE THE RETURN STATEMENT BELOW. IT CRASHES.
-            if(true)
-                return;
-
             if (e != null) {
                 Log.e("SpeakerFeedback", "Error accessing polls");
                 return;
