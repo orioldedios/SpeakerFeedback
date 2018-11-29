@@ -529,10 +529,28 @@ public class MainActivity extends AppCompatActivity {
     public void votePoll(int index, int option)
     {
         Poll poll = polls.get(index);
+        String id = ids.get(index);
 
         if(poll.lastVote != -1)
             poll.undoLastVote();
 
         poll.addVote(option);
+
+        //Update the RecyclerView
+        adapter.notifyDataSetChanged();
+
+        //Send the votes to the database
+        db.collection("rooms").document("testroom").collection("polls").document(id).set(poll)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.i("SpeakerFeedback", "Poll saved");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("SpeakerFeedback", "Poll NOT saved", e);
+            }
+        });
     }
 }
