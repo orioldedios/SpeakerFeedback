@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     //Variables
 
     private static final int REGISTER_USER = 0;
+    private static final int NEW_POLL = 1;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference roomRef;
 
@@ -320,8 +322,8 @@ public class MainActivity extends AppCompatActivity {
         polls_view.setAdapter(adapter);
 
         polls = new ArrayList<Poll>();
-        polls.add(new Poll("lalala?"));
-        polls.add(new Poll("Qué ise illo? xddd"));
+        polls.add(new Poll("Lorem ipsum?"));
+        polls.add(new Poll("Si yo soy yo y tú eres tú, quién es mas tonto de los dos?"));
 
         getOrRegisterUser();
         startFirestoreListenerService();
@@ -374,6 +376,16 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
     }
 
+    private void createNewPoll(String question) {
+        Poll poll = new Poll(question);
+        roomRef.collection("polls").add(poll).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MainActivity.this, "Couldn't add poll", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void getOrRegisterUser() {
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
@@ -389,6 +401,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onAddPoll(View view) {
+        Intent intent = new Intent(this, NewPollActivity.class);
+        startActivityForResult(intent, NEW_POLL);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -399,6 +416,12 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Has de registrar un nom", Toast.LENGTH_SHORT).show();
                     finish();
+                }
+                break;
+            case NEW_POLL:
+                if (resultCode == RESULT_OK) {
+                    String question = data.getStringExtra("question");
+                    createNewPoll(question);
                 }
                 break;
             default:
