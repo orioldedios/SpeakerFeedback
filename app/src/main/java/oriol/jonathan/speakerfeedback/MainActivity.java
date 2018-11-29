@@ -201,10 +201,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-            //TODO: Fix the listener and delete this return
-
-           if(true)
-               return;
+            //TODO: FIX THIS LISTENER AND DELETE THE RETURN STATEMENT BELOW. IT CRASHES.
+            if(true)
+                return;
 
             if (e != null) {
                 Log.e("SpeakerFeedback", "Error accessing polls");
@@ -213,14 +212,18 @@ public class MainActivity extends AppCompatActivity {
 
             polls.clear();
             activePoll = false;
-            for (DocumentSnapshot doc : documentSnapshots) {
+            for (DocumentSnapshot doc : documentSnapshots)
+            {
                 Poll poll = doc.toObject(Poll.class);
 
-                //ids.add(doc.getId());
-                polls.add(poll);
-                pollsMap.put(doc.getId(), poll);
-                if (poll.isOpen()) {
-                    activePoll = true;
+                if(poll != null)
+                {
+                    //ids.add(doc.getId());
+                    polls.add(poll);
+                    pollsMap.put(doc.getId(), poll);
+                    if (poll.isOpen()) {
+                        activePoll = true;
+                    }
                 }
             }
             Log.i("SpeakerFeedback", String.format("He carregat %d polls.", polls.size()));
