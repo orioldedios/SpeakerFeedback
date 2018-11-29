@@ -499,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Delete the listener in order to don't react again to the clicks, already voted.
+        //Delete the listener in order to don't react again to the clicks, votes already closed.
         removeVotesListener();
     }
 
@@ -509,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(poll.lastVote != -1)
             poll.undoLastVote();
-        
+
         poll.addVote(option);
     }
 }
