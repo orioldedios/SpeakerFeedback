@@ -20,6 +20,7 @@ public class NewPollActivity extends AppCompatActivity
         setContentView(R.layout.activity_new_poll);
 
         editQuestion = findViewById(R.id.editQuestionLabel);
+        //TODO: OPTIONAL: Set custom options?
     }
 
     public void onAddClick(View view)
