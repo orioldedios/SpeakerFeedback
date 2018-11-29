@@ -470,7 +470,8 @@ public class MainActivity extends AppCompatActivity {
         Poll poll = polls.get(index);
         if(poll.isOpen())
         {
-            final List<String> options = poll.getOptions().subList(0, poll.getOptions().size());
+            //Keep a copy list, in order to not add the 'Close Poll' option to the original list.
+            final List<String> options = new ArrayList<>(poll.getOptions());
             options.add("Close Poll");
 
             final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item);
@@ -521,13 +522,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Delete the listener in order to don't react again to the clicks, already voted.
+        //Delete the listener in order to don't react again to the clicks, votes already closed.
         removeVotesListener();
     }
 
     public void votePoll(int index, int option)
     {
         Poll poll = polls.get(index);
+
+        if(poll.lastVote != -1)
+            poll.undoLastVote();
+
         poll.addVote(option);
     }
 }
