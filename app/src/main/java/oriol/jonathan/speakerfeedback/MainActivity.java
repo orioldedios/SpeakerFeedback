@@ -506,6 +506,10 @@ public class MainActivity extends AppCompatActivity {
     public void votePoll(int index, int option)
     {
         Poll poll = polls.get(index);
+
+        if(poll.lastVote != -1)
+            poll.undoLastVote();
+        
         poll.addVote(option);
     }
 }

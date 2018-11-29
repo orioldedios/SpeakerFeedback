@@ -11,6 +11,7 @@ public class Poll {
     private boolean isOpen;
     private Date start, end;
     private List<Integer> results;
+    public int lastVote = -1;
 
     Poll(){}
 
@@ -67,6 +68,7 @@ public class Poll {
     {
         if(results != null && results.get(choice) != null)
         {
+            lastVote = choice;
             results.set(choice,results.get(choice)+1);
         }
     }
@@ -79,4 +81,15 @@ public class Poll {
             results.add(0);
         }
     }
+
+    //Simply make -= 1 to the last option voted
+    public void undoLastVote()
+    {
+        if(results != null && lastVote != -1 && results.get(lastVote) != null)
+        {
+            results.set(lastVote, results.get(lastVote)-1);
+            lastVote = -1;
+        }
+    }
+
 }
