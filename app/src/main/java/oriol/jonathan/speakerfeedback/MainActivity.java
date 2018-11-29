@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -35,44 +36,30 @@ import edu.upc.citm.android.speakerfeedback.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Variables
+
     private static final int REGISTER_USER = 0;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference roomRef;
+
     private TextView userCountView;
     private RecyclerView polls_view;
     private Adapter adapter;
     private String userId;
-    private ListenerRegistration roomRegistration;
-    private ListenerRegistration userRegistration;
     private List<Poll> polls = new ArrayList<>();
+
+    ListenerRegistration votesRegistration;
+
+    private Map<String, Poll> pollsMap = new HashMap<>();
+
+    private boolean activePoll = false;
 
     private static final int MAX_OPTIONS = 10;
     private static final int option_view_ids[] = { R.id.option1View, R.id.option2View, R.id.option3View, R.id.option4View, R.id.option5View };
     private static final int bar_view_ids[]    = { R.id.bar1View, R.id.bar2View, R.id.bar3View, R.id.bar4View, R.id.bar5View };
     private static final int count_view_ids[]  = { R.id.awnser1View, R.id.awnser2View, R.id.awnser3View, R.id.awnser4View, R.id.awnser5View };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        userCountView = findViewById(R.id.usersCountView);
-
-        polls_view = findViewById(R.id.polls_view);
-        polls_view.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new Adapter();
-        polls_view.setAdapter(adapter);
-
-        polls = new ArrayList<Poll>();
-        polls.add(new Poll("lalala?"));
-        polls.add(new Poll("Qué ise illo? xddd"));
-
-        getOrRegisterUser();
-
-        if(userId != null)
-        {
-            enterRoom();
-        }
-    }
+    //Classes
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -185,15 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        db.collection("users").document(userId).update("room", FieldValue.delete());
-        super.onDestroy();
-    }
-
-    private void enterRoom() {
-        db.collection("users").document(userId).update("room","testroom");
-    }
+    //Listeners
 
     private EventListener<DocumentSnapshot> roomListener = new EventListener<DocumentSnapshot>() {
         @Override
@@ -218,23 +197,165 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private EventListener<QuerySnapshot> pollsListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+            //TODO: Fix the listener and delete this return
+
+           if(true)
+               return;
+
+            if (e != null) {
+                Log.e("SpeakerFeedback", "Error accessing polls");
+                return;
+            }
+
+            polls.clear();
+            activePoll = false;
+            for (DocumentSnapshot doc : documentSnapshots) {
+                Poll poll = doc.toObject(Poll.class);
+
+                //ids.add(doc.getId());
+                polls.add(poll);
+                pollsMap.put(doc.getId(), poll);
+                if (poll.isOpen()) {
+                    activePoll = true;
+                }
+            }
+            Log.i("SpeakerFeedback", String.format("He carregat %d polls.", polls.size()));
+            adapter.notifyDataSetChanged();
+            if (activePoll) {
+                addVotesListener();
+            } else {
+                removeVotesListener();
+            }
+
+            //Only let the user add a new poll if there is not already one active
+            //btn_add_poll.setVisibility(activePoll ? View.GONE : View.VISIBLE);
+        }
+    };
+
+    private EventListener<QuerySnapshot> votesListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+            if(true)
+                return;
+
+            if (e != null) {
+                Log.e("SpeakerFeedback", "Error accessing votes");
+                return;
+            }
+
+            // Reset votes for the open Poll
+            for (Poll poll : polls) {
+                if (poll.isOpen()) {
+                    poll.resetVotes();
+                }
+            }
+
+            // Accumulate votes
+            for (DocumentSnapshot doc : documentSnapshots) {
+                if (!doc.contains("pollid")) {
+                    Log.e("SpeakerFeedback", "Vote is missing 'pollId'");
+                    return;
+                }
+
+                String pollId = doc.getString("pollid");
+                Long vote = doc.getLong("option");
+                if (vote == null) {
+                    Log.e("SpeakerFeedback", "Vote is missing 'option'");
+                    return;
+                }
+
+                Poll poll = pollsMap.get(pollId);
+                if (poll == null) {
+                    Log.e("SpeakerFeedback", "Vote for non-existing poll");
+                } else if (!poll.isOpen()) {
+                    Log.e("SpeakerFeedback", "Vote for an already closed poll");
+                } else {
+                    poll.addVote((int)(long)vote);
+                }
+            }
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    //Methods
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        userCountView = findViewById(R.id.usersCountView);
+
+        polls_view = findViewById(R.id.polls_view);
+        polls_view.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new Adapter();
+        polls_view.setAdapter(adapter);
+
+        polls = new ArrayList<Poll>();
+        polls.add(new Poll("lalala?"));
+        polls.add(new Poll("Qué ise illo? xddd"));
+
+        getOrRegisterUser();
+
+        if(userId != null)
+        {
+            enterRoom();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        db.collection("users").document(userId).update("room", FieldValue.delete());
+        super.onDestroy();
+    }
+
+    private void enterRoom() {
+        db.collection("users").document(userId).update("room","testroom");
+    }
+
+    private void removeVotesListener(){
+
+        if(true)
+            return;
+
+        if (votesRegistration != null) {
+            votesRegistration.remove();
+        }
+    }
+
+    private void addVotesListener() {
+        if(true)
+            return;
+
+        votesRegistration = roomRef.collection("votes")
+                .addSnapshotListener(this, votesListener);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
 
-        roomRegistration = db.collection("rooms").document("testroom")
-                .addSnapshotListener(roomListener);
+        roomRef = db.collection("rooms").document("testroom");
 
-        userRegistration = db.collection("users").whereEqualTo("room","testroom")
-                .addSnapshotListener(userListener);
+        //SetUp listeners
+        roomRef.addSnapshotListener(roomListener);
+        db.collection("users").whereEqualTo("room", "testroom")
+                .addSnapshotListener(this, userListener);
+        roomRef.collection("polls").orderBy("start", Query.Direction.DESCENDING)
+                .addSnapshotListener(this, pollsListener);
+
+        //Get a reference to the votes listener
+        votesRegistration = roomRef.collection("votes").addSnapshotListener(this, votesListener);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        roomRegistration.remove();
-        userRegistration.remove();
     }
 
     private void getOrRegisterUser() {
