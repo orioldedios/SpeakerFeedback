@@ -9,7 +9,7 @@ public class Poll {
     private String question;
     private List<String> options;
     private boolean isOpen;
-    private Date start,end;
+    private Date start, end;
     private List<Integer> results;
 
     Poll(String question)

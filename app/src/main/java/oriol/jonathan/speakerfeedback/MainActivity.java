@@ -39,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextView userCountView;
     private RecyclerView polls_view;
+    private Adapter adapter;
     private String userId;
     private ListenerRegistration roomRegistration;
     private ListenerRegistration userRegistration;
     private List<Poll> polls = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +52,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         userCountView = findViewById(R.id.usersCountView);
+
         polls_view = findViewById(R.id.polls_view);
         polls_view.setLayoutManager(new LinearLayoutManager(this));
-        polls_view.setAdapter(new Adapter());
+        adapter = new Adapter();
+        polls_view.setAdapter(adapter);
 
         polls = new ArrayList<Poll>();
         polls.add(new Poll("lalala?"));
+        polls.add(new Poll("Qué ise illo? xddd"));
 
         getOrRegisterUser();
 
@@ -65,12 +70,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private static final int MAX_OPTIONS = 10;
     private static final int option_view_ids[] = { R.id.option1View, R.id.option2View, R.id.option3View, R.id.option4View, R.id.option5View };
     private static final int bar_view_ids[]    = { R.id.bar1View, R.id.bar2View, R.id.bar3View, R.id.bar4View, R.id.bar5View };
     private static final int count_view_ids[]  = { R.id.awnser1View, R.id.awnser2View, R.id.awnser3View, R.id.awnser4View, R.id.awnser5View };
-
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -182,14 +185,6 @@ public class MainActivity extends AppCompatActivity {
             return polls.size();
         }
     }
-
-
-
-
-
-
-
-
 
     @Override
     protected void onDestroy() {
