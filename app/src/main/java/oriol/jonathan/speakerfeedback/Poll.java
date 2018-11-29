@@ -1,4 +1,4 @@
-package edu.upc.citm.android.speakerfeedback;
+package oriol.jonathan.speakerfeedback;
 
 import java.util.ArrayList;
 import java.util.Date;

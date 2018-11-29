@@ -1,4 +1,4 @@
-package edu.upc.citm.android.speakerfeedback;
+package oriol.jonathan.speakerfeedback;
 
 public class UserInfo
 {

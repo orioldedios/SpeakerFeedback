@@ -9,15 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="oriol.jonathan.speakerfeedback.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterUserActivity" />
-        <activity android:name=".UsersListActivity"></activity>
+        <activity android:name="oriol.jonathan.speakerfeedback.RegisterUserActivity" />
+        <activity android:name="oriol.jonathan.speakerfeedback.UsersListActivity"></activity>
     </application>
 
 </manifest>

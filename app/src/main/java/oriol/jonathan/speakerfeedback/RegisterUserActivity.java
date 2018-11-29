@@ -1,10 +1,12 @@
-package edu.upc.citm.android.speakerfeedback;
+package oriol.jonathan.speakerfeedback;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import edu.upc.citm.android.speakerfeedback.R;
 
 public class RegisterUserActivity extends AppCompatActivity {
 

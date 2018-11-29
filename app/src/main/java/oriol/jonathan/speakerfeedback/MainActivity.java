@@ -1,4 +1,4 @@
-package edu.upc.citm.android.speakerfeedback;
+package oriol.jonathan.speakerfeedback;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.upc.citm.android.speakerfeedback.R;
 
 public class MainActivity extends AppCompatActivity {
 
