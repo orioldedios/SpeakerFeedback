@@ -266,9 +266,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
 
-            if(true)
-                return;
-
             if (e != null) {
                 Log.e("SpeakerFeedback", "Error accessing votes");
                 return;
