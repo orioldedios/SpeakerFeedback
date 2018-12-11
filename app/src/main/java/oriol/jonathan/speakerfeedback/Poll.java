@@ -92,4 +92,16 @@ public class Poll {
         }
     }
 
+    @Override
+    public String toString() {
+
+        String ret = question;
+
+        for(String string : options)
+        {
+            question += "\n" + string;
+        }
+
+        return question;
+    }
 }

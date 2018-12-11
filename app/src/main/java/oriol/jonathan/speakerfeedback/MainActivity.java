@@ -4,7 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -38,6 +43,8 @@ import java.util.Map;
 
 import edu.upc.citm.android.speakerfeedback.R;
 
+import static edu.upc.citm.android.speakerfeedback.R.id.CloseApp;
+
 public class MainActivity extends AppCompatActivity {
 
     //Variables
@@ -45,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REGISTER_USER = 0;
     private static final int NEW_POLL = 1;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private DocumentReference roomRef;
+    public static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static DocumentReference roomRef;
 
     private TextView userCountView;
     private RecyclerView polls_view;
@@ -327,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
         polls.add(new Poll("Si yo soy yo y tú eres tú, quién es mas tonto de los dos?"));
 
         getOrRegisterUser();
-        startFirestoreListenerService();
+
         if(userId != null)
         {
             enterRoom();
@@ -335,13 +342,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        db.collection("users").document(userId).update("room", FieldValue.delete());
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId())
+        {
+            case R.id.CloseApp:
+            {
+                CloseApp();
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    private void CloseApp() {
+        stopFirestoreListenerService();
+        finish();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
         super.onDestroy();
     }
 
-    private void enterRoom() {
+    private void enterRoom()
+    {
         db.collection("users").document(userId).update("room","testroom");
+        startFirestoreListenerService();
     }
 
     private void removeVotesListener()
@@ -373,7 +408,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
+    protected void onStop()
+    {
         super.onStop();
     }
 
@@ -400,7 +436,9 @@ public class MainActivity extends AppCompatActivity {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
             db.collection("users").document(userId).update("last_active", new Date());
+            prefs.edit().putBoolean("alreadyLogged", true).commit();
         }
+
     }
 
     public void onAddPoll(View view) {
