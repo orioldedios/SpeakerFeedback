@@ -31,6 +31,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -398,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Ja està registrat, mostrem el id al Log
             Log.i("SpeakerFeedback", "userId = " + userId);
+            db.collection("users").document(userId).update("last_active", new Date());
         }
     }
 
@@ -432,6 +434,7 @@ public class MainActivity extends AppCompatActivity {
     private void registerUser(String name) {
         Map<String, Object> fields = new HashMap<>();
         fields.put("name", name);
+        fields.put("last_active", new Date());
         db.collection("users").add(fields).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
