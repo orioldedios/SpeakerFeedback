@@ -1,9 +1,6 @@
 package oriol.jonathan.speakerfeedback;
 
-import android.app.Activity;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,8 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.upc.citm.android.speakerfeedback.R;
-
-import static java.security.AccessController.getContext;
 
 public class RoomListActivity extends AppCompatActivity {
 
@@ -104,6 +99,8 @@ public class RoomListActivity extends AppCompatActivity {
                             {
                                 ShowToast("Joined " + "\"" + roomID + "\"");
 
+
+
                                 //TODO: JOIN THE ROOM
                             }
                         }
@@ -124,7 +121,7 @@ public class RoomListActivity extends AppCompatActivity {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.inputtextdialog, null);
         final EditText input = dialogView.findViewById(R.id.editText);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         input.setHint("Password");
 
         new AlertDialog.Builder(this)
