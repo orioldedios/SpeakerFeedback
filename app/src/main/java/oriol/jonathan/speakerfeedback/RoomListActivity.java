@@ -125,10 +125,10 @@ public class RoomListActivity extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.inputtextdialog, null);
         final EditText input = dialogView.findViewById(R.id.editText);
         input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        input.setHint("Introduce the Password");
+        input.setHint("Password");
 
         new AlertDialog.Builder(this)
-                .setTitle("Password")
+                .setTitle("Introduce the Password")
                 .setView(dialogView)
                 .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
                     @Override
