@@ -91,6 +91,10 @@ public class FirestoneListenerService extends Service {
     @Override
     public void onDestroy() {
         Log.i("SpeakerFeedback","FirestoneListenerService.onDestroy");
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.cancelAll();
+
         super.onDestroy();
     }
 

@@ -370,6 +370,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy()
     {
+        stopFirestoreListenerService();
         super.onDestroy();
     }
 
