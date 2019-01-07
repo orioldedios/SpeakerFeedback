@@ -441,11 +441,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void onAddPoll(View view) {
-        Intent intent = new Intent(this, NewPollActivity.class);
-        startActivityForResult(intent, NEW_POLL);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -456,12 +451,6 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "Has de registrar un nom", Toast.LENGTH_SHORT).show();
                     finish();
-                }
-                break;
-            case NEW_POLL:
-                if (resultCode == RESULT_OK) {
-                    String question = data.getStringExtra("question");
-                    createNewPoll(question);
                 }
                 break;
             default:
@@ -513,8 +502,6 @@ public class MainActivity extends AppCompatActivity {
         {
             //Keep a copy list, in order to not add the 'Close Poll' option to the original list.
             final List<String> options = new ArrayList<>(poll.getOptions());
-            options.add("Close Poll");
-
             final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item);
             for(String option : options)
             {
@@ -527,14 +514,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int option)
                         {
-                            if (option == options.size()-1) {
-                                closePoll(index);
-                            }
-
-                            else
-                            {
-                                votePoll(index, option);
-                            }
+                            votePoll(index, option);
                         }
                     })
                     .create().show();
@@ -543,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void closePoll(int index)
     {
-        String id = ids.get(index);
+        /*String id = ids.get(index);
         Poll poll = polls.get(index);
 
         //Close the poll, to not let the user vote again
@@ -564,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Delete the listener in order to don't react again to the clicks, votes already closed.
-        removeVotesListener();
+        removeVotesListener();*/
     }
 
     public void votePoll(int index, int option)
