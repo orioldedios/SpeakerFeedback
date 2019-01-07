@@ -11,11 +11,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import edu.upc.citm.android.speakerfeedback.R;
@@ -27,7 +25,7 @@ public class FirestoneListenerService extends Service {
         super.onCreate();
         Log.i("SpeakerFeedback","FirestoneListenerService.onCreate");
 
-        MainActivity.roomRef.collection("polls").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        PollListActivity.roomRef.collection("polls").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                 if (e != null) {
@@ -61,7 +59,7 @@ public class FirestoneListenerService extends Service {
     }
 
     private void createForegrowndNotification() {
-        Intent intent = new Intent(this,MainActivity.class);
+        Intent intent = new Intent(this,PollListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
 
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
@@ -73,7 +71,7 @@ public class FirestoneListenerService extends Service {
     }
 
     private void createPollModifiedNotification(Poll poll, int id) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, PollListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)

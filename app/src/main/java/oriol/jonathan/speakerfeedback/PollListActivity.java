@@ -4,9 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,7 +26,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -43,9 +40,7 @@ import java.util.Map;
 
 import edu.upc.citm.android.speakerfeedback.R;
 
-import static edu.upc.citm.android.speakerfeedback.R.id.CloseApp;
-
-public class MainActivity extends AppCompatActivity {
+public class PollListActivity extends AppCompatActivity {
 
     //Variables
 
@@ -419,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
         roomRef.collection("polls").add(poll).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(MainActivity.this, "Couldn't add poll", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PollListActivity.this, "Couldn't add poll", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -466,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
         db.collection("users").add(fields).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                // Toast.makeText(MainActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(PollListActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                 // textview.setText(documentReference.getId());
                 userId = documentReference.getId();
                 SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
@@ -481,7 +476,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e("SpeakerFeedback", "Error creant objecte", e);
-                Toast.makeText(MainActivity.this,
+                Toast.makeText(PollListActivity.this,
                         "No s'ha pogut registrar l'usuari, intenta-ho més tard", Toast.LENGTH_SHORT).show();
                 finish();
             }
