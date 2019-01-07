@@ -1,6 +1,7 @@
 package oriol.jonathan.speakerfeedback;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -99,9 +100,10 @@ public class RoomListActivity extends AppCompatActivity {
                             {
                                 ShowToast("Joined " + "\"" + roomID + "\"");
 
-
-
-                                //TODO: JOIN THE ROOM
+                                //Join the room
+                                Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
+                                intent.putExtra("roomName", roomID);
+                                startActivity(intent);
                             }
                         }
                         else
@@ -137,7 +139,10 @@ public class RoomListActivity extends AppCompatActivity {
                         {
                             ShowToast("Password correct!\nJoined " + "\"" + room.name + "\"");
 
-                            //TODO: JOIN THE ROOM
+                            //Join the room
+                            Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
+                            intent.putExtra("roomName", room.name);
+                            startActivity(intent);
                         }
                         else
                         {

@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -54,6 +56,7 @@ public class PollListActivity extends AppCompatActivity {
     private RecyclerView polls_view;
     private Adapter adapter;
     private String userId;
+    private String roomName = "testroom";
     private List<Poll> polls = new ArrayList<>();
     private List<String> ids = new ArrayList<>();
 
@@ -213,6 +216,9 @@ public class PollListActivity extends AppCompatActivity {
                 Log.e("SpeakerFeedback", "Error al rebre rooms/testroom", e);
                 return;
             }
+            if(!documentSnapshot.exists())
+                return;
+
             String name = documentSnapshot.getString("name");
             setTitle(name);
         }
@@ -329,11 +335,6 @@ public class PollListActivity extends AppCompatActivity {
         polls.add(new Poll("Si yo soy yo y tú eres tú, quién es mas tonto de los dos?"));
 
         getOrRegisterUser();
-
-        if(userId != null)
-        {
-            enterRoom();
-        }
     }
 
     @Override
@@ -371,7 +372,7 @@ public class PollListActivity extends AppCompatActivity {
 
     private void enterRoom()
     {
-        db.collection("users").document(userId).update("room","testroom");
+        db.collection("users").document(userId).update("room",roomName);
         startFirestoreListenerService();
     }
 
@@ -385,7 +386,7 @@ public class PollListActivity extends AppCompatActivity {
 
     private void addVotesListener()
     {
-        votesRegistration = roomRef.collection("votes")
+        votesRegistration = roomRef.collection("polls")
                 .addSnapshotListener(this, votesListener);
     }
 
@@ -393,14 +394,25 @@ public class PollListActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        roomRef = db.collection("rooms").document("testroom");
+        Intent intent = getIntent();
+        String roomName2 = intent.getStringExtra("roomName");
+        if(roomName2 == null)
+            roomName2 = "testroom";
+
+        roomName = roomName2;
+        roomRef = db.collection("rooms").document(roomName);
 
         //SetUp listeners
         roomRef.addSnapshotListener(roomListener);
-        db.collection("users").whereEqualTo("room", "testroom")
+        db.collection("users").whereEqualTo("room", roomName)
                 .addSnapshotListener(this, userListener);
         roomRef.collection("polls").orderBy("start", Query.Direction.DESCENDING)
                 .addSnapshotListener(this, pollsListener);
+
+        if(userId != null)
+        {
+            enterRoom();
+        }
     }
 
     @Override
@@ -434,7 +446,6 @@ public class PollListActivity extends AppCompatActivity {
             db.collection("users").document(userId).update("last_active", new Date());
             prefs.edit().putBoolean("alreadyLogged", true).commit();
         }
-
     }
 
     @Override
@@ -486,7 +497,7 @@ public class PollListActivity extends AppCompatActivity {
     public void onStatusBarClick(View view)
     {
         Intent intent = new Intent(this, UsersListActivity.class);
-        intent.putExtra("roomId", "testroom");
+        intent.putExtra("roomId", roomName);
         startActivity(intent);
     }
 
@@ -557,7 +568,12 @@ public class PollListActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         //Send the votes to the database
-        db.collection("rooms").document("testroom").collection("polls").document(id).set(poll)
+
+        /*Map<String, Object> map = new HashMap<>();
+        map.put("pollid", index);
+        map.put("option", option);*/
+
+        roomRef.collection("polls").document(id).set(poll)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -569,5 +585,20 @@ public class PollListActivity extends AppCompatActivity {
                 Log.e("SpeakerFeedback", "Poll NOT saved", e);
             }
         });
+
+        //TODO: UPDATE THE POLLS. POLLS CLASS ARE BAD DEFINED.
+        /*QuerySnapshot snapshot = roomRef.collection("polls").get().getResult();
+        for(DocumentSnapshot doc : snapshot)
+        {
+            Poll oldPoll = doc.toObject(Poll.class);
+
+            if(oldPoll.getQuestion().equals(poll.getQuestion()))
+            {
+                DocumentReference document = doc.getDocumentReference(doc.getId());
+                document.set(poll);
+
+                break;
+            }
+        }*/
     }
 }
