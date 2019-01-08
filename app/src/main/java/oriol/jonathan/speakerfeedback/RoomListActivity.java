@@ -3,10 +3,12 @@ package oriol.jonathan.speakerfeedback;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,7 +41,68 @@ import edu.upc.citm.android.speakerfeedback.R;
 public class RoomListActivity extends AppCompatActivity {
 
     List<Room> roomList = new ArrayList<>();
+    List<String> recentRooms = new ArrayList<>();
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    String userId;
+
+    RecyclerView recentsGrid;
+    Adapter adapter;
+
+    //Rooms listener
+    EventListener<QuerySnapshot> roomsListener = new EventListener<QuerySnapshot>() {
+        @Override
+        public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+
+            if (e != null) {
+                Log.e("SpeakerFeedback", e.getMessage());
+                return;
+            }
+            roomList.clear();
+            for (DocumentSnapshot document : documentSnapshots) {
+                Room room = document.toObject(Room.class);
+                roomList.add(room);
+            }
+        }
+    };
+
+    public class ViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView textView;
+
+        public ViewHolder(View itemView)
+        {
+            super(itemView);
+
+            textView = itemView.findViewById(R.id.recentRoom);
+        }
+    }
+
+    public class Adapter extends RecyclerView.Adapter<ViewHolder>
+    {
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        {
+            View itemView = getLayoutInflater().inflate(R.layout.recent_room, parent, false);
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+        {
+            String recentName = recentRooms.get(position);
+            holder.textView.setText(recentName);
+        }
+
+        @Override
+        public int getItemCount()
+        {
+            return recentRooms.size();
+        }
+    }
+
 
     void ShowToast(String text)
     {
@@ -49,6 +114,11 @@ public class RoomListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
 
+        recentsGrid = findViewById(R.id.RecentGrid);
+        recentsGrid.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false));
+        adapter = new Adapter();
+        recentsGrid.setAdapter(adapter);
+
         Intent intent = getIntent();
         boolean closeApp = intent.getBooleanExtra("EXIT", false);
         if(closeApp)
@@ -56,26 +126,35 @@ public class RoomListActivity extends AppCompatActivity {
             finish();
         }
 
-        db.collection("rooms").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-
-                if(e != null)
-                {
-                    Log.e("SpeakerFeedback", e.getMessage());
-                    return;
-                }
-
-                for(DocumentSnapshot document : documentSnapshots)
-                {
-                    Room room = document.toObject(Room.class);
-                    roomList.add(room);
-                }
-            }
-        });
+        db.collection("rooms").addSnapshotListener(roomsListener);
 
         getOrRegisterUser();
+
+        //Load recent rooms
+        SharedPreferences prefs = getSharedPreferences(userId, MODE_PRIVATE);
+        int recentSize = prefs.getInt("recentSize", 0);
+
+        for(int i = 0; i < recentSize; ++i)
+        {
+            String roomName = prefs.getString("Recent" + Integer.toString(i), "");
+            recentRooms.add(roomName);
+        }
+
         ShowRoomDialog();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        SharedPreferences prefs = getSharedPreferences(userId, MODE_PRIVATE);
+        prefs.edit().clear().putInt("recentSize", recentRooms.size()).commit();
+
+        for(int i = 0; i < recentRooms.size(); ++i)
+        {
+            prefs.edit().putString("Recent" + Integer.toString(i), recentRooms.get(i)).commit();
+        }
+
+        super.onDestroy();
     }
 
     @Override
@@ -170,14 +249,24 @@ public class RoomListActivity extends AppCompatActivity {
                                     ShowRoomDialog();
                                 }
 
-                                else
-                                {
+                                else {
                                     ShowToast("Joined " + "\"" + roomID + "\"");
 
                                     //Join the room
                                     Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
                                     intent.putExtra("roomName", roomID);
                                     startActivity(intent);
+
+                                    //Save this room as recent
+                                    boolean alreadyRecent = false;
+                                    for(String string : recentRooms)
+                                    {
+                                        if(string.equals(roomID))
+                                            alreadyRecent = true;
+                                    }
+
+                                    if(!alreadyRecent)
+                                        recentRooms.add(roomID);
                                 }
                             }
                         }
@@ -218,6 +307,17 @@ public class RoomListActivity extends AppCompatActivity {
                             Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
                             intent.putExtra("roomName", room.name);
                             startActivity(intent);
+
+                            //Save this room as recent
+                            boolean alreadyRecent = false;
+                            for(String string : recentRooms)
+                            {
+                                if(string.equals(room.name))
+                                    alreadyRecent = true;
+                            }
+
+                            if(!alreadyRecent)
+                                recentRooms.add(room.name);
                         }
                         else
                         {
@@ -233,7 +333,7 @@ public class RoomListActivity extends AppCompatActivity {
     private void getOrRegisterUser() {
         // Busquem a les preferències de l'app l'ID de l'usuari per saber si ja s'havia registrat
         SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
-        String userId = prefs.getString("userId", null);
+        userId = prefs.getString("userId", null);
         if (userId == null) {
             // Hem de registrar l'usuari, demanem el nom
             Intent intent = new Intent(this, RegisterUserActivity.class);
@@ -274,7 +374,7 @@ public class RoomListActivity extends AppCompatActivity {
             public void onSuccess(DocumentReference documentReference) {
                 // Toast.makeText(PollListActivity.this, "Success!", Toast.LENGTH_SHORT).show();
                 // textview.setText(documentReference.getId());
-                String userId = documentReference.getId();
+                userId = documentReference.getId();
                 SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
                 prefs.edit()
                         .putString("userId", userId)
