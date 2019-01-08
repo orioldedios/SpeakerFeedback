@@ -130,6 +130,7 @@ public class RoomListActivity extends AppCompatActivity {
                         //Search for this room, if exist proceed with the Password, else toast an error.
 
                         boolean exists = false;
+
                         Room desiredRoom = null;
                         for(Room room : roomList)
                         {
@@ -145,16 +146,31 @@ public class RoomListActivity extends AppCompatActivity {
                         {
                             if(desiredRoom != null && !desiredRoom.password.equals(""))
                             {
-                                ShowPasswordDialog(desiredRoom);
+                                if(desiredRoom.open)
+                                    ShowPasswordDialog(desiredRoom);
+                                else
+                                {
+                                    ShowToast("\"" + desiredRoom.name + "\" is closed");
+                                    ShowRoomDialog();
+                                }
                             }
                             else
                             {
-                                ShowToast("Joined " + "\"" + roomID + "\"");
+                                if(!desiredRoom.open)
+                                {
+                                    ShowToast("\"" + desiredRoom.name + "\" is closed");
+                                    ShowRoomDialog();
+                                }
 
-                                //Join the room
-                                Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
-                                intent.putExtra("roomName", roomID);
-                                startActivity(intent);
+                                else
+                                {
+                                    ShowToast("Joined " + "\"" + roomID + "\"");
+
+                                    //Join the room
+                                    Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
+                                    intent.putExtra("roomName", roomID);
+                                    startActivity(intent);
+                                }
                             }
                         }
                         else
