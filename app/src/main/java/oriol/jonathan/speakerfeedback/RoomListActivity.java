@@ -232,6 +232,11 @@ public class RoomListActivity extends AppCompatActivity {
             startActivity(newIntent);
         }
 
+        if(recentRooms.isEmpty() && roomOpened.equals(""))
+        {
+            ShowRoomDialog();
+        }
+
     }
 
     @Override
