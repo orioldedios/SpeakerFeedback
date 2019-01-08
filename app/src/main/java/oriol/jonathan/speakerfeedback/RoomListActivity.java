@@ -87,6 +87,7 @@ public class RoomListActivity extends AppCompatActivity {
                     i--;
                 }
             }
+            adapter.notifyDataSetChanged();
         }
     };
 
