@@ -67,12 +67,11 @@ public class RoomListActivity extends AppCompatActivity {
         }
     };
 
-    public class ViewHolder extends RecyclerView.ViewHolder
-    {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
         TextView textView;
 
-        public ViewHolder(View itemView)
-        {
+        public ViewHolder(View itemView) {
             super(itemView);
 
             textView = itemView.findViewById(R.id.recentRoom);
@@ -90,10 +89,17 @@ public class RoomListActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position)
         {
             String recentName = recentRooms.get(position);
             holder.textView.setText(recentName);
+
+            holder.textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    RecentRoomClicked(position);
+                }
+            });
         }
 
         @Override
@@ -103,6 +109,15 @@ public class RoomListActivity extends AppCompatActivity {
         }
     }
 
+    void RecentRoomClicked(int position)
+    {
+        String clickedRoom = recentRooms.get(position);
+
+        //Join the room
+        Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
+        intent.putExtra("roomName", clickedRoom);
+        startActivity(intent);
+    }
 
     void ShowToast(String text)
     {
