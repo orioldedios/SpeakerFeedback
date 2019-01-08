@@ -20,6 +20,8 @@ import edu.upc.citm.android.speakerfeedback.R;
 
 public class FirestoneListenerService extends Service {
 
+    private String roomName;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,6 +54,9 @@ public class FirestoneListenerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        roomName = intent.getStringExtra("room");
+
         Log.i("SpeakerFeedback","FirestoneListenerService.onStartCommand");
         createForegrowndNotification();
 
@@ -59,11 +64,12 @@ public class FirestoneListenerService extends Service {
     }
 
     private void createForegrowndNotification() {
+
         Intent intent = new Intent(this,PollListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
 
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle(String.format("Connectat a 'testroom'"))
+                .setContentTitle(String.format("Connectat a '" + roomName + "'"))
                 .setSmallIcon(R.drawable.ic_message_black_24dp)
                 .setContentIntent(pendingIntent)
                 .build();

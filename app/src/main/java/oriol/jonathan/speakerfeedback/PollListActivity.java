@@ -197,7 +197,7 @@ public class PollListActivity extends AppCompatActivity {
     private void startFirestoreListenerService()
     {
         Intent intent = new Intent(this,FirestoneListenerService.class);
-        intent.putExtra("room","testroom");
+        intent.putExtra("room",roomName);
         startService(intent);
     }
 
@@ -221,6 +221,13 @@ public class PollListActivity extends AppCompatActivity {
 
             String name = documentSnapshot.getString("name");
             setTitle(name);
+
+            Room room = documentSnapshot.toObject(Room.class);
+            if(room.open == false)
+            {
+                //This room has been closed by the Speaker, end the activity
+                finish();
+            }
         }
     };
 
@@ -267,9 +274,6 @@ public class PollListActivity extends AppCompatActivity {
             } else {
                 removeVotesListener();
             }
-
-            //Only let the user add a new poll if there is not already one active
-            //btn_add_poll.setVisibility(activePoll ? View.GONE : View.VISIBLE);
         }
     };
 
