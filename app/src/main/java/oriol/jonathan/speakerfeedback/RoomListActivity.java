@@ -64,6 +64,29 @@ public class RoomListActivity extends AppCompatActivity {
                 Room room = document.toObject(Room.class);
                 roomList.add(room);
             }
+
+            //Removing closed or deleted rooms from the recent list
+            for(int i = 0; i < recentRooms.size(); ++i)
+            {
+                boolean notfound_or_closed = true;
+                for(Room room : roomList)
+                {
+                    if (recentRooms.get(i).equals(room.name))
+                    {
+                        if(room.open)
+                        {
+                            notfound_or_closed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(notfound_or_closed)
+                {
+                    recentRooms.remove(i);
+                    i--;
+                }
+            }
         }
     };
 
