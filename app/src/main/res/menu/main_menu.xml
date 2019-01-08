@@ -3,6 +3,5 @@
 
     <item
         android:id="@+id/CloseApp"
-        android:title="CloseApp"
-        />
+        android:title="Close App" />
 </menu>

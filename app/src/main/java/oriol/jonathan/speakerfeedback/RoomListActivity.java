@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -38,6 +41,13 @@ public class RoomListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
 
+        Intent intent = getIntent();
+        boolean closeApp = intent.getBooleanExtra("EXIT", false);
+        if(closeApp)
+        {
+            finish();
+        }
+
         db.collection("rooms").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
@@ -58,6 +68,47 @@ public class RoomListActivity extends AppCompatActivity {
 
         ShowRoomDialog();
 
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.room_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.CloseApp:
+            {
+                CloseApp();
+                break;
+            }
+            case R.id.EnterRoom:
+            {
+                ShowRoomDialog();
+                break;
+            }
+        }
+        return true;
+    }
+
+    private void CloseApp()
+    {
+        Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("EXIT", true);
+        startActivity(intent);
     }
 
     private void ShowRoomDialog()

@@ -345,7 +345,8 @@ public class PollListActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         switch(item.getItemId())
         {
             case R.id.CloseApp:
@@ -358,9 +359,14 @@ public class PollListActivity extends AppCompatActivity {
         return true;
     }
 
-    private void CloseApp() {
+    private void CloseApp()
+    {
         stopFirestoreListenerService();
-        finish();
+
+        Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("EXIT", true);
+        startActivity(intent);
     }
 
     @Override
