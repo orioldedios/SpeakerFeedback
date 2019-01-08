@@ -46,8 +46,7 @@ public class PollListActivity extends AppCompatActivity {
 
     //Variables
 
-    private static final int REGISTER_USER = 0;
-    private static final int NEW_POLL = 1;
+    public static final int REGISTER_USER = 0;
 
     public static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static DocumentReference roomRef;
@@ -335,8 +334,6 @@ public class PollListActivity extends AppCompatActivity {
         polls_view.setAdapter(adapter);
 
         polls = new ArrayList<Poll>();
-        polls.add(new Poll("Lorem ipsum?"));
-        polls.add(new Poll("Si yo soy yo y tú eres tú, quién es mas tonto de los dos?"));
 
         getOrRegisterUser();
     }
@@ -377,6 +374,7 @@ public class PollListActivity extends AppCompatActivity {
     protected void onDestroy()
     {
         stopFirestoreListenerService();
+        leaveRoom();
         super.onDestroy();
     }
 
@@ -384,6 +382,11 @@ public class PollListActivity extends AppCompatActivity {
     {
         db.collection("users").document(userId).update("room",roomName);
         startFirestoreListenerService();
+    }
+
+    private void leaveRoom()
+    {
+        db.collection("users").document(userId).update("room", "");
     }
 
     private void removeVotesListener()
