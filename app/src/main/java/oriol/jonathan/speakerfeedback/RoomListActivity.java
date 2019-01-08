@@ -124,6 +124,15 @@ public class RoomListActivity extends AppCompatActivity {
                     RecentRoomClicked(position);
                 }
             });
+
+            holder.textView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view)
+                {
+                    RecentRoomLongClicked(position);
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -141,6 +150,39 @@ public class RoomListActivity extends AppCompatActivity {
         Intent intent = new Intent(RoomListActivity.this, PollListActivity.class);
         intent.putExtra("roomName", clickedRoom);
         startActivity(intent);
+    }
+
+    void RecentRoomLongClicked(final int position)
+    {
+        DialogInterface.OnClickListener longClickDialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                switch(i)
+                {
+                    case DialogInterface.BUTTON_POSITIVE:
+                    {
+                        adapter.notifyItemRemoved(position);
+                        recentRooms.remove(position);
+                        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+                        break;
+                    }
+                    case DialogInterface.BUTTON_NEGATIVE:
+                    {
+                        break;
+                    }
+                }
+            }
+        };
+
+        String clickedRoom = recentRooms.get(position);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmation:")
+                .setMessage("Do you want to delete \"" + recentRooms.get(position) + "\" from the recent list?")
+                .setPositiveButton("Delete it", longClickDialogListener)
+                .setNegativeButton("Cancel", longClickDialogListener)
+                .show();
     }
 
     void ShowToast(String text)
