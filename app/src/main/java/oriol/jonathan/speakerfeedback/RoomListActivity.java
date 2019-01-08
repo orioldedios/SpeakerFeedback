@@ -178,6 +178,18 @@ public class RoomListActivity extends AppCompatActivity {
             String roomName = prefs.getString("Recent" + Integer.toString(i), "");
             recentRooms.add(roomName);
         }
+
+        prefs = getSharedPreferences("config", MODE_PRIVATE);
+        String roomOpened = prefs.getString("roomOpened", "");
+
+        if(!closeApp && !roomOpened.equals(""))
+        {
+            //Join the room
+            Intent newIntent = new Intent(RoomListActivity.this, PollListActivity.class);
+            newIntent.putExtra("roomName", roomOpened);
+            startActivity(newIntent);
+        }
+
     }
 
     @Override
@@ -229,6 +241,9 @@ public class RoomListActivity extends AppCompatActivity {
 
     private void CloseApp()
     {
+        SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
+        prefs.edit().putString("roomOpened", "").apply();
+
         Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("EXIT", true);

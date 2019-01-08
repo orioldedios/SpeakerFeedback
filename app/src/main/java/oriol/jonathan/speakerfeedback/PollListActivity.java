@@ -4,10 +4,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,8 +23,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -362,6 +360,10 @@ public class PollListActivity extends AppCompatActivity {
 
     private void CloseApp()
     {
+        //Save the opened room, in order to open it directly the next time the app is opened.
+        SharedPreferences prefs = getSharedPreferences("config", MODE_PRIVATE);
+        prefs.edit().putString("roomOpened", roomName).apply();
+
         stopFirestoreListenerService();
 
         Intent intent = new Intent(getApplicationContext(), RoomListActivity.class);
