@@ -154,7 +154,7 @@ public class RoomListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_room_list);
 
         recentsGrid = findViewById(R.id.RecentGrid);
-        recentsGrid.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.HORIZONTAL, false));
+        recentsGrid.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new Adapter();
         recentsGrid.setAdapter(adapter);
 
