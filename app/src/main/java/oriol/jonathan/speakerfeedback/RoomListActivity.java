@@ -178,8 +178,6 @@ public class RoomListActivity extends AppCompatActivity {
             String roomName = prefs.getString("Recent" + Integer.toString(i), "");
             recentRooms.add(roomName);
         }
-
-        ShowRoomDialog();
     }
 
     @Override
@@ -317,7 +315,7 @@ public class RoomListActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .setCancelable(false)
+                //.setCancelable(false)
                 .create().show();
     }
 
@@ -365,7 +363,7 @@ public class RoomListActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .setCancelable(false)
+                //.setCancelable(false)
                 .create().show();
     }
 
